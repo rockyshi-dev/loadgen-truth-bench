@@ -1,0 +1,25 @@
+{
+  "vllm": {
+    "vllm/benchmarks/serve.py": "ec255c3b3f3bade1584e01e043f80a699225f657d31d7290a835d26a61eec142",
+    "vllm/benchmarks/lib/endpoint_request_func.py": "d49b306d437dc34e4cbec8bf76e8934b026152439fa89098370724dba2361e18"
+  },
+  "guidellm": {
+    "guidellm/schemas/backends/openai_http.py": "2025c0876af31ee2b57bedf35000995812adb99b627560fe4f777e37555d3cee",
+    "guidellm/backends/openai/request_handlers.py": "68272d23a7f096db9b46ff06098a46de83da0ed1d2bf0688f70e009d85c1448b",
+    "guidellm/schemas/base/statistics.py": "58cb34a2d9ccd46c83ab98e4acb8fd6c7777be58b6c28d20272aa04276f96bd7",
+    "guidellm/scheduler/worker_group.py": "901445098861f93c4c4ae7b85b1c923fe719ec711157690eb10facc7b56965fb",
+    "guidellm/benchmark/schemas/metrics.py": "dd8f592ad598d9394338347c2f49af3c1f7d563796c0da8f28d39c1dce9539b0"
+  },
+  "aiperf": {
+    "aiperf/endpoints/openai_completions.py": "e01016e2af7cdb0a7ae75fbde8ee7f282b66b02dd7b4cc9468e6fb4b3c8f042f",
+    "aiperf/metrics/metric_dicts.py": "16bc2fb211c9e224e80ea563bcd9a40d6b82bdfa42e485f73a94de853269726f",
+    "aiperf/metrics/types/request_throughput_metric.py": "638b3877f03e4a8b1caa853e2a64d3752c8fb3534d992ca49456a595ddd99694",
+    "aiperf/common/models/record_models.py": "a33cff0072dd3e3d8af2419891c64a8cd440f0cbe5ba41429a8ec248a8fb14e1"
+  },
+  "inference-perf": {
+    "inference_perf/reportgen/base.py": "91b92785bb27306c11ff21a07538311f6532fa48b5503986e25ec43367af723c",
+    "inference_perf/config/reportgen/config.py": "92fbf509c2c3401c748aa8e650c8a682c76a5f47317568bb9454179c59a557ed",
+    "inference_perf/loadgen/load_generator.py": "aeb2037234b083c2f6b88ff90644e71e52c0c0a939718435ee7977411ca91f03",
+    "inference_perf/apis/completion.py": "f128db566f9f6fff5c6074679573aac41b4bbd9785e7b3637260322498ac9fda"
+  }
+}
