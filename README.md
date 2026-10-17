@@ -138,7 +138,11 @@ raw difference is kept, not only the verdict.
 - Linux on x86_64 with two sockets: at least 26 physical cores on socket 0 and 20 on socket 1
   (`lscpu -p` is read), `taskset`, and an `RLIMIT_NOFILE` hard limit of at least 65,536.
 - An otherwise idle machine (gate Q) and a free loopback port (8188 by default).
-- conda, git, and internet access during setup only (PyPI, download.pytorch.org, go.dev, GitHub).
+- conda, git, and internet access during setup only (PyPI, download.pytorch.org, go.dev, GitHub, and the
+  Go module proxy). Where go.dev's download path or proxy.golang.org is unreachable, `GO_DOWNLOAD_BASE`
+  (default `https://go.dev/dl/`; the same files are at `https://dl.google.com/go/`) and Go's own `GOPROXY`
+  select mirrors; the release list still comes from go.dev, and the toolchain archive is checked against
+  the sha256 it publishes either way.
 - The Qwen2.5-7B-Instruct tokenizer in a Hugging Face cache snapshot directory,
   `<HF_HOME>/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/<commit>` (revision
   `a09a35458c702b33eeacc393d103063234e8bc28` is the one the command lines were written against).

@@ -37,7 +37,8 @@ def main(work):
     artifact = next(f for f in release['files'] if f['filename'] == f'{go_version}.linux-amd64.tar.gz')
     archive = root / artifact['filename']
     if not (root / 'go/bin/go').exists():
-        fetch('https://go.dev/dl/' + artifact['filename'], archive)
+        # The archive is checked against the sha256 go.dev publishes, so it may come from a mirror.
+        fetch(os.environ.get('GO_DOWNLOAD_BASE', 'https://go.dev/dl/') + artifact['filename'], archive)
         assert hashlib.sha256(archive.read_bytes()).hexdigest() == artifact['sha256']
         with tarfile.open(archive) as tar:
             tar.extractall(root, filter='data')
