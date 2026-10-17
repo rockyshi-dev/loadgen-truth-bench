@@ -35,6 +35,9 @@ for tool in guidellm aiperf inference-perf vllm; do
             conda create --prefix "$env_dir" --yes python=3.12 pip
         fi
         conda activate "$env_dir" || exit 1
+        # The setuptools and wheel that conda bundles can be newer than the reference lock, and the PyTorch index
+        # below does not carry the locked versions: pin them from PyPI first.
+        python -m pip install -c "$repo/constraints/$tool.txt" setuptools wheel
         # CPU torch first, so pip does not fetch a GPU framework for a client.
         if [[ "$tool" == guidellm ]]; then
             python -m pip install --index-url https://download.pytorch.org/whl/cpu -c "$repo/constraints/$tool.txt" torch
