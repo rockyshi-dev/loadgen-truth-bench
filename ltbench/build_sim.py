@@ -4,10 +4,13 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tarfile
 import urllib.request
 
-from ltbench.spec import PINS
+if __package__ in (None, ''):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from ltbench.spec import PINS  # noqa: E402
 
 
 def fetch(url, path):
