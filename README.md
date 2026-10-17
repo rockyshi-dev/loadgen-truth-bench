@@ -142,7 +142,9 @@ raw difference is kept, not only the verdict.
   Go module proxy). Where go.dev's download path or proxy.golang.org is unreachable, `GO_DOWNLOAD_BASE`
   (default `https://go.dev/dl/`; the same files are at `https://dl.google.com/go/`) and Go's own `GOPROXY`
   select mirrors. The toolchain archive is checked against the size and sha256 go.dev publishes for it,
-  pinned in `ltbench/spec.py` (`GO_TOOLCHAIN`), so setup makes no request to go.dev's release list.
+  pinned in `ltbench/spec.py` (`GO_TOOLCHAIN`), so setup makes no request to go.dev's release list. Where
+  github.com is unreachable, `SIM_GIT_URL` names any git remote (a bare clone, for example) holding the
+  simulator repository; the source is checked out at the pinned commit id, which identifies its contents.
 - The Qwen2.5-7B-Instruct tokenizer in a Hugging Face cache snapshot directory,
   `<HF_HOME>/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/<commit>` (revision
   `a09a35458c702b33eeacc393d103063234e8bc28` is the one the command lines were written against).

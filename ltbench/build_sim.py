@@ -19,6 +19,24 @@ def fetch(url, path):
             out.write(chunk)
 
 
+def checkout_source(source, url, commit):
+    """Leave `source` at exactly `commit`, fetched from `url` when it is not there yet. Returns the url used."""
+    source = Path(source)
+    if not source.exists():
+        subprocess.run(['git', 'init', str(source)], check=True)
+        subprocess.run(['git', '-C', str(source), 'remote', 'add', 'origin', url], check=True)
+    head = subprocess.run(['git', '-C', str(source), 'rev-parse', 'HEAD'], capture_output=True, text=True)
+    if head.returncode != 0 or head.stdout.strip() != commit:
+        subprocess.run(['git', '-C', str(source), 'fetch', '--depth=1', url, commit], check=True)
+        subprocess.run(['git', '-C', str(source), 'checkout', '--detach', 'FETCH_HEAD'], check=True)
+    if subprocess.check_output(['git', '-C', str(source), 'status', '--porcelain'], text=True).strip():
+        raise ValueError('Refuse to build or overwrite a modified simulator source tree')
+    subprocess.run(['git', '-C', str(source), 'checkout', '--detach', commit], check=True)
+    if subprocess.check_output(['git', '-C', str(source), 'rev-parse', 'HEAD'], text=True).strip() != commit:
+        raise ValueError(f'{source}: not at the pinned commit {commit}')
+    return url
+
+
 def main(work):
     work = Path(work)
     root = work / 'setup'
@@ -45,23 +63,16 @@ def main(work):
     assert go_version in version
     repo, tag, commit = PINS['sim']
     source = root / 'sim-source'
-    if not source.exists():
-        subprocess.run(['git', 'init', str(source)], check=True)
-        subprocess.run(['git', '-C', str(source), 'remote', 'add', 'origin', f'https://github.com/{repo}.git'], check=True)
-    head = subprocess.run(['git', '-C', str(source), 'rev-parse', 'HEAD'], capture_output=True, text=True)
-    if head.returncode != 0 or head.stdout.strip() != commit:
-        subprocess.run(['git', '-C', str(source), 'fetch', '--depth=1', 'origin', commit], check=True)
-    if subprocess.check_output(['git', '-C', str(source), 'status', '--porcelain'], text=True).strip():
-        raise ValueError('Refuse to build or overwrite a modified simulator source tree')
-    subprocess.run(['git', '-C', str(source), 'checkout', '--detach', commit], check=True)
-    assert subprocess.check_output(['git', '-C', str(source), 'rev-parse', 'HEAD'], text=True).strip() == commit
+    # The source is identified by its commit id (a hash of the whole tree and history), so it may be fetched from
+    # any git remote: SIM_GIT_URL names a mirror of the repository where github.com is unreachable.
+    source_url = checkout_source(source, os.environ.get('SIM_GIT_URL', f'https://github.com/{repo}.git'), commit)
     env = dict(go_env, CGO_ENABLED='0', GOTOOLCHAIN='local',
                GOPATH=str(root / 'go-work'), GOCACHE=str(root / 'go-cache'),
                GOENV='off', GOMAXPROCS='8')
     argv = [str(root / 'go/bin/go'), 'build', '-p', '8', '-o', str(work / 'bin/llm-d-inference-sim'),
             'cmd/llm-d-inference-sim/main.go']
     subprocess.run(argv, cwd=source, env=env, check=True)
-    receipt = {'repo': repo, 'tag': tag, 'commit': commit, 'go': version, 'argv': argv,
+    receipt = {'repo': repo, 'tag': tag, 'commit': commit, 'source_url': source_url, 'go': version, 'argv': argv,
                'binary_sha256': hashlib.sha256((work / 'bin/llm-d-inference-sim').read_bytes()).hexdigest()}
     (root / 'sim-build.json').write_text(json.dumps(receipt, indent=2))
 
