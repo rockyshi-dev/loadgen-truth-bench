@@ -10,7 +10,7 @@ import urllib.request
 
 if __package__ in (None, ''):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from ltbench.spec import PINS  # noqa: E402
+from ltbench.spec import GO_TOOLCHAIN, PINS  # noqa: E402
 
 
 def fetch(url, path):
@@ -24,22 +24,18 @@ def main(work):
     root = work / 'setup'
     (work / 'bin').mkdir(parents=True, exist_ok=True)
     root.mkdir(parents=True, exist_ok=True)
-    go_version = 'go1.26.6'  # pinned source go.mod, not the host's default toolchain
-    release_file = root / 'go-release.json'
-    if release_file.exists():
-        release = json.loads(release_file.read_text())
-    else:
-        with urllib.request.urlopen('https://go.dev/dl/?mode=json&include=all', timeout=60) as response:
-            releases = json.load(response)
-        release = next(r for r in releases if r['version'] == go_version)
-        release_file.write_text(json.dumps(release, indent=2))
-    assert release['version'] == go_version
-    artifact = next(f for f in release['files'] if f['filename'] == f'{go_version}.linux-amd64.tar.gz')
-    archive = root / artifact['filename']
+    go_version = GO_TOOLCHAIN['version']  # pinned source go.mod, not the host's default toolchain
+    archive = root / GO_TOOLCHAIN['filename']
     if not (root / 'go/bin/go').exists():
-        # The archive is checked against the sha256 go.dev publishes, so it may come from a mirror.
-        fetch(os.environ.get('GO_DOWNLOAD_BASE', 'https://go.dev/dl/') + artifact['filename'], archive)
-        assert hashlib.sha256(archive.read_bytes()).hexdigest() == artifact['sha256']
+        # The archive is checked against the size and sha256 go.dev publishes (pinned in spec.py), so it may come
+        # from a mirror, and no release-list request is made.
+        url = os.environ.get('GO_DOWNLOAD_BASE', 'https://go.dev/dl/') + GO_TOOLCHAIN['filename']
+        fetch(url, archive)
+        if archive.stat().st_size != GO_TOOLCHAIN['size']:
+            raise ValueError(f'{archive.name}: {archive.stat().st_size} bytes, expected {GO_TOOLCHAIN["size"]}')
+        if hashlib.sha256(archive.read_bytes()).hexdigest() != GO_TOOLCHAIN['sha256']:
+            raise ValueError(f'{archive.name}: sha256 differs from the pinned value')
+        (root / 'go-toolchain.json').write_text(json.dumps(dict(GO_TOOLCHAIN, url=url), indent=2))
         with tarfile.open(archive) as tar:
             tar.extractall(root, filter='data')
         archive.unlink()

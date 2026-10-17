@@ -22,6 +22,10 @@ PINS = {
     'inference-perf': ('kubernetes-sigs/inference-perf', 'v0.7.0', '5804ea6b7ebd2bfceff29cf113311ed3af95146e'),
     'sim': ('llm-d/llm-d-inference-sim', 'v0.11.2', '7639395743c76f1cb37222981b33e8ea56cce69b'),
 }
+# The Go toolchain the simulator's go.mod names, with the archive's size and sha256 as go.dev publishes them
+# (https://go.dev/dl/?mode=json&include=all). Pinned here so that setup needs no release-list request.
+GO_TOOLCHAIN = {'version': 'go1.26.6', 'filename': 'go1.26.6.linux-amd64.tar.gz', 'size': 66890545,
+                'sha256': '708effb774be8237570d0add163225abbdfaf4fca28b2611df167beba4feef89'}
 
 
 def digest(path):

@@ -141,8 +141,8 @@ raw difference is kept, not only the verdict.
 - conda, git, and internet access during setup only (PyPI, download.pytorch.org, go.dev, GitHub, and the
   Go module proxy). Where go.dev's download path or proxy.golang.org is unreachable, `GO_DOWNLOAD_BASE`
   (default `https://go.dev/dl/`; the same files are at `https://dl.google.com/go/`) and Go's own `GOPROXY`
-  select mirrors; the release list still comes from go.dev, and the toolchain archive is checked against
-  the sha256 it publishes either way.
+  select mirrors. The toolchain archive is checked against the size and sha256 go.dev publishes for it,
+  pinned in `ltbench/spec.py` (`GO_TOOLCHAIN`), so setup makes no request to go.dev's release list.
 - The Qwen2.5-7B-Instruct tokenizer in a Hugging Face cache snapshot directory,
   `<HF_HOME>/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/<commit>` (revision
   `a09a35458c702b33eeacc393d103063234e8bc28` is the one the command lines were written against).
