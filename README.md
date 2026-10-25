@@ -162,7 +162,7 @@ setsid bash setup.sh /path/to/work > setup.log 2>&1 < /dev/null &
 ```
 
 Every package in each environment is constrained to the version in `constraints/<tool>.txt`
-(the `pip freeze` of the reference environments: for example aiohttp 3.14.3 and httpx 0.28.1
+(the `pip freeze` of the environments the published results were measured in: for example aiohttp 3.14.3 and httpx 0.28.1
 everywhere, transformers 5.13.0 in inference-perf's). The tools' own HTTP and tokenizer stacks
 are part of what is measured, and so is the probe's: the runner and the probe run in the
 inference-perf environment, with its aiohttp. An environment given with `VLLM_ENV` is used as it
@@ -257,6 +257,10 @@ A panel writes:
 the difference, the classification under both rules and GuideLLM's documented rank.
 `python -m ltbench compare <panel-a> <panel-b>` lists every difference in decision, knees,
 delivery, aggregated cells and per-round cell classifications between two panels.
+
+`python scripts/guidellm_timing.py <panel>` reads GuideLLM's own per-request timings from its
+exports and prints, per GuideLLM run, how late each request was sent against GuideLLM's plan, its
+send rate between seconds 20 and 58, and how soon a request was sent once a worker took it.
 
 ## Tests
 
